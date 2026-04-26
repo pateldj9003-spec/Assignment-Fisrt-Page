@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Assignment Cover Image Generator</title>
+
+<!-- html2canvas is kept as a backup or for other features, though the new function uses native Canvas API -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: #eef2f3;
+        text-align: center;
+        margin: 0;
+        padding: 20px;
+        color: #333;
+    }
+
+    .container {
+        background: white;
+        max-width: 400px;
+        margin: 0 auto 30px auto;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+        margin-top: 0;
+        font-size: 20px;
+        color: #000;
+    }
+
+    input, select {
+        padding: 12px;
+        margin: 8px 0;
+        width: 100%;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 14px;
+    }
+
+    .button-group {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 15px;
+    }
+
+    button {
+        padding: 12px 20px;
+        background: #000;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background 0.2s;
+        flex: 1;
+    }
+
+    button:hover {
+        background: #333;
+    }
+
+    button.secondary {
+        background: #444;
+    }
+
+    /* PREVIEW DESIGN SECTION */
+    #captureArea {
+        width: 700px;
+        height: 900px;
+        background: white;
+        margin: 0 auto;
+        padding: 60px;
+        border: 3px double black;
+        position: relative;
+        text-align: left;
+        box-sizing: border-box;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .title {
+        text-align: center;
+        font-size: 42px;
+        font-weight: bold;
+        text-decoration: underline;
+        margin-top: 40px;
+        text-transform: uppercase;
+    }
+
+    .details {
+        margin-top: 160px;
+        font-size: 26px;
+        line-height: 2.2;
+        font-weight: bold; /* Bold in preview */
+    }
+
+    .details span {
+        font-weight: bold;
+        border-bottom: 1px solid #eee;
+        display: inline-block;
+        min-width: 200px;
+    }
+
+    .college-name {
+        margin-top: 40px;
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    .date-row {
+        position: absolute;
+        bottom: 60px;
+        left: 60px;
+        font-size: 22px;
+        font-weight: bold;
+    }
+
+    /* Mobile handling for preview */
+    @media (max-width: 760px) {
+        #captureArea {
+            transform: scale(0.5);
+            transform-origin: top center;
+            margin-bottom: -450px;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>Cover Page Generator</h2>
+
+    <input type="text" id="name" placeholder="Enter Full Name">
+    <input type="text" id="enroll" placeholder="Enrollment No">
+
+    <select id="subject">
+        <option value="">Select Subject</option>
+        <option>Wind and Solar Energy (3160917)</option>
+        <option>EMMI (3160915)</option>
+        <option>Electrical Material (3160923)</option>
+        <option>IPS (3160920)</option>
+    </select>
+
+    <div class="button-group">
+        <button class="secondary" onclick="updatePreview()">Update Preview</button>
+        <button onclick="downloadJPG()">Download JPG</button>
+    </div>
+</div>
+
+<!-- PREVIEW AREA -->
+<div id="captureArea">
+    <div class="title">Assignment file</div>
+
+    <div class="details">
+        Name :- <span id="pname">__________</span><br>
+        En.no. :- <span id="penroll">__________</span><br>
+        Sub. :- <span id="psubject">__________</span><br>
+        <div class="college-name">GEC Palanpur</div>
+    </div>
+
+    <div class="date-row">
+        Date :- ______________
+    </div>
+</div>
+
+<script>
+/**
+ * Updates the text within the preview area based on input fields
+ */
+function updatePreview() {
+    const nameVal = document.getElementById("name").value.trim();
+    const enrollVal = document.getElementById("enroll").value.trim();
+    const subjectVal = document.getElementById("subject").value;
+
+    document.getElementById("pname").innerText = nameVal || "__________";
+    document.getElementById("penroll").innerText = enrollVal || "__________";
+    document.getElementById("psubject").innerText = subjectVal || "__________";
+}
+
+/**
+ * Your new function: Manual Canvas drawing for JPG generation
+ */
+function downloadJPG() {
+    // Sync the preview labels first
+    updatePreview();
+
+    const name = document.getElementById("pname").innerText;
+    const enroll = document.getElementById("penroll").innerText;
+    const subject = document.getElementById("psubject").innerText;
+
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = 700;
+    canvas.height = 900;
+
+    // Background
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, 700, 900);
+
+    // Border
+    ctx.strokeStyle = "#000";
+    ctx.lineWidth = 4;
+    ctx.strokeRect(10, 10, 680, 880);
+
+    // Title (Bold)
+    ctx.font = "bold 40px Arial";
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#000";
+    ctx.fillText("Assignment File", 350, 120);
+
+    // Details (Bold to match preview)
+    ctx.textAlign = "left";
+    ctx.font = "bold 22px Arial";
+
+    ctx.fillText("Name :- " + name, 80, 300);
+    ctx.fillText("En.no. :- " + enroll, 80, 350);
+    ctx.fillText("Sub. :- " + subject, 80, 400);
+    
+    // College Name (Bold)
+    ctx.font = "bold 24px Arial";
+    ctx.fillText("GEC Palanpur", 80, 470);
+
+    // Date (Bold)
+    ctx.font = "bold 22px Arial";
+    ctx.fillText("Date :- ____________", 80, 800);
+
+    // Download logic
+    const link = document.createElement("a");
+    link.href = canvas.toDataURL("image/jpeg", 1.0);
+    link.download = "Assignment First Page.jpg";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+</script>
+
+</body>
+</html>
